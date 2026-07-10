@@ -104,7 +104,7 @@ public class TrackingController {
         // Create a simple consumption log without requiring a meal plan
         ConsumptionLog log = ConsumptionLog.builder()
                 .dailyMeal(null) // No meal plan required
-                .actualCalories(calories)
+                .actualCalories(calories.intValue())
                 .actualProtein(protein)
                 .actualCarbs(carbs)
                 .actualFat(fat)
@@ -127,35 +127,4 @@ public class TrackingController {
         return ResponseEntity.ok(ApiResponse.success(response, "Comida registrada exitosamente"));
     }
 
-    @GetMapping("/daily-consumption")
-    public ResponseEntity<ApiResponse<Map<String, Object>>> getDailyConsumption(
-            Authentication authentication) {
-        
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-
-        LocalDate today = LocalDate.now();
-        LocalDateTime startOfDay = today.atStartOfDay();
-        LocalDateTime endOfDay = today.atTime(23, 59, 59);
-
-        // Get all logs for today
-        List<ConsumptionLog> todayLogs = consumptionLogRepository.findByConsumedAtBetween(startOfDay, endOfDay);
-
-        // Calculate totals
-        double totalCalories = todayLogs.stream().mapToDouble(ConsumptionLog::getActualCalories).sum();
-        double totalProtein = todayLogs.stream().mapToDouble(ConsumptionLog::getActualProtein).sum();
-        double totalCarbs = todayLogs.stream().mapToDouble(ConsumptionLog::getActualCarbs).sum();
-        double totalFat = todayLogs.stream().mapToDouble(ConsumptionLog::getActualFat).sum();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("date", today.toString());
-        response.put("totalCalories", totalCalories);
-        response.put("totalProtein", totalProtein);
-        response.put("totalCarbs", totalCarbs);
-        response.put("totalFat", totalFat);
-        response.put("mealCount", todayLogs.size());
-
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
 }

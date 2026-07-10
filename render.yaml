@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: bitewise-backend
+    env: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/bitewise-web-services-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: bitewise-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: bitewise-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: bitewise-db
+          property: password
+      - key: APP_JWT_SECRET
+        generateValue: true
+      - key: EDAMAM_APP_ID
+        sync: false
+      - key: EDAMAM_APP_KEY
+        sync: false
+
+databases:
+  - name: bitewise-db
+    databaseName: bitewise_db
+    user: bitewise_user
