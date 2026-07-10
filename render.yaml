@@ -1,9 +1,7 @@
 services:
   - type: web
     name: bitewise-backend
-    env: java
-    buildCommand: ./mvnw clean package -DskipTests
-    startCommand: java -jar target/bitewise-web-services-0.0.1-SNAPSHOT.jar
+    runtime: docker
     envVars:
       - key: SPRING_DATASOURCE_URL
         fromDatabase:
